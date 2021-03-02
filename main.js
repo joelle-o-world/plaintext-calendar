@@ -3,15 +3,13 @@ const fs = require('fs');
 const path = require('path');
 const ics = require('ics');
 const child_process = require('child_process')
+const {cancelActiveEvents, insertEvents} = require('./parseIcs')
 
 const filepath = process.argv[2]
 const dir = path.dirname(filepath)
 const events = []
 
 function handleEvent(line, from, to) {
-  console.log(line)
-  console.log({from, to})
-  console.log('\n')
 
 
   events.push({
@@ -31,9 +29,23 @@ function flushEvents() {
     if(err)
       throw err;
 
-    let calfile = path.resolve(dir, `${datestr}.ics`)
+    const calfile = path.resolve(dir, `${datestr}.ics`)
+    const oldFileExists = fs.existsSync(calfile)
+    if(oldFileExists) {
+      const oldFile = fs.readFileSync(calfile, 'utf-8');
+      let cancellations = cancelActiveEvents(oldFile);
+      val = insertEvents(cancellations, val)
+    }
+
+    // Switch the method to request
+    //let i = val.indexOf('METHOD:');
+    //let j = val.indexOf('\r', i);
+    //val = val.slice(0, i) + 'METHOD:REQUEST' + val.slice(j)
+    //
     fs.writeFileSync(calfile, val)
-    child_process.exec(`open ${calfile}`)
+
+    if(events.length || oldFileExists)
+      child_process.exec(`open ${calfile}`)
   })
 }
 
@@ -61,7 +73,7 @@ fs.readFile(filepath, 'utf-8',  (err, str) => {
       } else if(durationParsed) {
         to = add(from, durationParsed);
       } else
-        to = {...from}
+        to = add(from, {hh:1, mm:0})
       handleEvent(line, makeDateTime(from), makeDateTime(to))
 
       t = to
