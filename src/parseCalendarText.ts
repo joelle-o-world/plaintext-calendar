@@ -16,6 +16,7 @@ export interface Event {
   indentedness: number;
   explicitEndTime: boolean;
   explicitDuration: boolean;
+  message: string;
   description: string;
 }
 
@@ -40,10 +41,10 @@ export function parseCalendarText(txt: string) {
     let [message, indentedness] = unindent(line)
     let parentEvent = getParentEvent(events, indentedness)
     
-
     let previousEndTime = getPreviousEndTime(events, indentedness);
     
-    let {time, duration} = parseLine(message);
+    const time = parseTimeTag(message)
+    const duration = parseDurationTag(message)
     const explicitDuration = !!duration;
     const explicitEndTime = !!time && !!time.endTime;
   
@@ -91,15 +92,6 @@ export function parseCalendarText(txt: string) {
 }
 
 export default parseCalendarText;
-
-function parseLine(line:string) {
-  // Find any time-tags
-
-  return {
-    time: parseTimeTag(line),
-    duration: parseDurationTag(line),
-  }
-}
 
 function getParentEvent(events: Event[], indentedness:number): Event|null {
   // Iterate backwards through events

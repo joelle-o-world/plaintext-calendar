@@ -28,3 +28,32 @@ export function add(...args:HoursMinutes[]) {
 export function toMinutes({hours, minutes}:HoursMinutes) {
   return hours * 60 + minutes
 }
+
+export function convertToDate({hours, minutes}: HoursMinutes, date: Date) {
+  // NOTE: This function may need to get complex to handle time zones etc
+
+  let result = new Date(date);
+  result.setHours(hours)
+  result.setMinutes(minutes);
+
+  return result
+}
+
+export type DateArray = [
+  number, // Year
+  number, // Month
+  number, // Day
+  number, // Hours
+  number, // Minutes
+];
+export function convertToDateArray(hhmm: HoursMinutes, day: Date):DateArray {
+  let date = convertToDate(hhmm, day);
+
+  return [
+    date.getFullYear(), 
+    date.getMonth()+1, 
+    date.getDate(), 
+    date.getHours(), 
+    date.getMinutes()
+  ]
+}
