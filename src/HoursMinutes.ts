@@ -46,14 +46,18 @@ export type DateArray = [
   number, // Hours
   number, // Minutes
 ];
+
 export function convertToDateArray(hhmm: HoursMinutes, day: Date):DateArray {
   let date = convertToDate(hhmm, day);
 
-  return [
-    date.getFullYear(), 
-    date.getMonth()+1, 
-    date.getDate(), 
-    date.getHours(), 
-    date.getMinutes()
-  ]
+  return dateArray(date);
 }
+
+export const dateArray = (date: Date):DateArray => [
+  date.getFullYear(), 
+  date.getMonth()+1, 
+  date.getDate(), 
+  date.getHours(), 
+  date.getMinutes()
+]
+

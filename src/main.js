@@ -9,8 +9,6 @@ const dir = path.dirname(filepath)
 const events = []
 
 function handleEvent(line, from, to) {
-
-
   events.push({
     title: line,
     description: line,

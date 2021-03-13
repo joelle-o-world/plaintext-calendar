@@ -1,8 +1,9 @@
 import config from './config'
 import {splitLines, unindent, decrementIndent} from './util';
-import {HoursMinutes, add, toMinutes} from './HoursMinutes';
+import {HoursMinutes, add, toMinutes, convertToDate} from './HoursMinutes';
 import {parseTimeTag} from './parseTimeTag';
 import {parseDurationTag} from './parseDurationTag'
+import {extractHeaderDate} from './parseHeader';
 
 export interface TimeSpan {
   startTime: HoursMinutes;
@@ -12,6 +13,9 @@ export interface TimeSpan {
 export interface Event {
   startTime: HoursMinutes;
   endTime: HoursMinutes;
+  day: Date;
+  startDatetime: Date,
+  endDatetime: Date,
   parentEvent: Event|null;
   indentedness: number;
   explicitEndTime: boolean;
@@ -27,14 +31,18 @@ export interface Warning {
   errorCode?: number
 }
 
-export function parseCalendarText(txt: string) {
+export interface ParseCalendarTextOptions {
+  filenameDate?: Date|null;
+}
 
-  let previous: Event
+export function parseCalendarText(txt: string, options?:ParseCalendarTextOptions={}) {
+
   let events:Event[] = []
 
   let warnings = [];
   const warn = (message:string) => warnings.push({message})
 
+  let day = options.filenameDate;
 
   // loop through lines
   for(let line of splitLines(txt)) {
@@ -43,31 +51,38 @@ export function parseCalendarText(txt: string) {
     
     let previousEndTime = getPreviousEndTime(events, indentedness);
     
-    const time = parseTimeTag(message)
-    const duration = parseDurationTag(message)
-    const explicitDuration = !!duration;
-    const explicitEndTime = !!time && !!time.endTime;
-  
-    if(time || duration) {
-      let startTime = time && time.startTime ? time.startTime : previousEndTime;
+    const timeTag = parseTimeTag(message)
+    const durationTag = parseDurationTag(message)
+    const explicitDuration = !!durationTag;
+    const explicitEndTime = !!timeTag && !!timeTag.endTime;
+
+    const headerInfo = extractHeaderDate(line)
+    if(headerInfo) {
+      day = headerInfo.headerDate;
+    }
+
+    if(timeTag || durationTag) {
+      let startTime = timeTag && timeTag.startTime ? timeTag.startTime : previousEndTime;
       let endTime: HoursMinutes
-      if(time && time.endTime)
-        endTime = time.endTime;
-      else if(duration)
-        endTime = add(startTime, duration)
+      if(timeTag && timeTag.endTime)
+        endTime = timeTag.endTime;
+      else if(durationTag)
+        endTime = add(startTime, durationTag)
       else
         endTime = add(startTime, config.defaultEventDuration)
 
-      let newEvent = {
+      let newEvent:Event = {
         startTime, 
         endTime, 
         message, 
         indentedness, 
-        previousEvent: previous,
         parentEvent,
         description: '',
         explicitEndTime,
         explicitDuration,
+        day,
+        startDatetime: convertToDate(startTime, day),
+        endDatetime: convertToDate(endTime, day),
       }
       events.push(newEvent)
 

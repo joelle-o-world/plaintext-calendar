@@ -54,3 +54,9 @@ test('nested descriptions', () => {
 
   expect(a.description).toBe("It's a hoot!")
 });
+
+test('header dates', () => { 
+  const {events} = parseCalendarText('# 2020-03-13\n @2pm Hello');
+  expect(events[0].day).toStrictEqual(new Date('2020-03-13'))
+  expect(events[0].startDatetime).toStrictEqual(new Date('2020-03-13 14:00'))
+});

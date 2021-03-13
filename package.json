@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ics": "^2.27.0"
+    "ics": "^2.27.0",
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",

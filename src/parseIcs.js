@@ -45,6 +45,7 @@ function parseEvent(str) {
   }
   return out;
 }
+
 function encodeEvent(ev, addWrappers=false) {
   let lines = [];
   for(let key in ev)
