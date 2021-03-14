@@ -1,14 +1,27 @@
-import {readFile} from 'fs'
+import fs from 'fs'
 import parseCalendarText from './parseCalendarText';
-import {extractDateFromFilepath} from './parseHeader';
+import convertToICS from './convertToICS';
+import child_process from 'child_process';
 
 const filepath = process.argv[2];
+const outputPath = filepath + '.ics'
 
-readFile(filepath, {encoding: 'utf8'}, (err, file) => {
+fs.readFile(filepath, {encoding: 'utf8'}, async (err, file) => {
   if(err)
     throw err;
 
-  let filenameDate = extractDateFromFilepath(filepath)
+  const {events, warnings} = parseCalendarText(file, {filepath});
 
-  parseCalendarText(file, {filenameDate});
+  const oldFile = fs.existsSync(outputPath) ? 
+    fs.readFileSync(outputPath, {encoding: 'utf8'}) 
+      : undefined;
+
+  let icsFile = await convertToICS(events, oldFile);
+
+  fs.writeFileSync(outputPath, icsFile, {encoding:'utf8'})
+
+
+  if(events.length || oldFile)
+    child_process.exec(`open ${outputPath}`)
 })
+

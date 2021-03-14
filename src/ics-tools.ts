@@ -14,7 +14,7 @@ export interface ICSEvent {
 }
 
 export function parseICSEvent(str:string):ICSEvent {
-  let out = {};
+  let out:ICSEvent = {};
   for(let line of str.split(/\r?\n/)) {
     let colonindex = line.indexOf(':');
     if(colonindex == -1) {

@@ -3,7 +3,7 @@ import {splitLines, unindent, decrementIndent} from './util';
 import {HoursMinutes, add, toMinutes, convertToDate} from './HoursMinutes';
 import {parseTimeTag} from './parseTimeTag';
 import {parseDurationTag} from './parseDurationTag'
-import {extractHeaderDate} from './parseHeader';
+import {extractHeaderDate, extractDateFromFilepath} from './parseHeader';
 
 export interface TimeSpan {
   startTime: HoursMinutes;
@@ -13,7 +13,7 @@ export interface TimeSpan {
 export interface Event {
   startTime: HoursMinutes;
   endTime: HoursMinutes;
-  day: Date;
+  day: Date|null;
   startDatetime: Date,
   endDatetime: Date,
   parentEvent: Event|null;
@@ -32,17 +32,28 @@ export interface Warning {
 }
 
 export interface ParseCalendarTextOptions {
-  filenameDate?: Date|null;
+  filepath?: string;
 }
 
-export function parseCalendarText(txt: string, options?:ParseCalendarTextOptions={}) {
+export function parseCalendarText(
+  txt: string, 
+  options:ParseCalendarTextOptions={}
+) {
 
   let events:Event[] = []
 
-  let warnings = [];
+  let warnings:Warning[] = [];
   const warn = (message:string) => warnings.push({message})
 
-  let day = options.filenameDate;
+  // Default to todays date
+  let day = new Date();
+
+  // Parse date from filename
+  if(options.filepath) {
+    let filepathDate = extractDateFromFilepath(options.filepath);
+    if(filepathDate)
+      day = filepathDate
+  }
 
   // loop through lines
   for(let line of splitLines(txt)) {
@@ -80,7 +91,7 @@ export function parseCalendarText(txt: string, options?:ParseCalendarTextOptions
         description: '',
         explicitEndTime,
         explicitDuration,
-        day,
+        day: day||null,
         startDatetime: convertToDate(startTime, day),
         endDatetime: convertToDate(endTime, day),
       }
