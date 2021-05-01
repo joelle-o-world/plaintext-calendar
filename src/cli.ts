@@ -16,7 +16,14 @@ fs.readFile(filepath, {encoding: 'utf8'}, async (err, file) => {
     fs.readFileSync(outputPath, {encoding: 'utf8'}) 
       : undefined;
 
-  let icsFile = await convertToICS(events, oldFile);
+  console.log('##', events)
+  let icsFile
+  try {
+    icsFile = await convertToICS(events, oldFile);
+  } catch(err) {
+    console.error( "Error converting to ICS format:", err);
+    return;
+  }
 
   fs.writeFileSync(outputPath, icsFile, {encoding:'utf8'})
 

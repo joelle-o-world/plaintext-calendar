@@ -4,6 +4,7 @@ import {HoursMinutes, add, toMinutes, convertToDate} from './HoursMinutes';
 import {parseTimeTag} from './parseTimeTag';
 import {parseDurationTag} from './parseDurationTag'
 import {extractHeaderDate, extractDateFromFilepath} from './parseHeader';
+import isValidDate from './isValidDate';
 
 export interface TimeSpan {
   startTime: HoursMinutes;
@@ -51,7 +52,7 @@ export function parseCalendarText(
   // Parse date from filename
   if(options.filepath) {
     let filepathDate = extractDateFromFilepath(options.filepath);
-    if(filepathDate)
+    if(filepathDate && isValidDate(filepathDate))
       day = filepathDate
   }
 
@@ -67,7 +68,7 @@ export function parseCalendarText(
     const explicitDuration = !!durationTag;
     const explicitEndTime = !!timeTag && !!timeTag.endTime;
 
-    const headerInfo = extractHeaderDate(line)
+    const headerInfo = extractHeaderDate(line, day)
     if(headerInfo) {
       day = headerInfo.headerDate;
     }

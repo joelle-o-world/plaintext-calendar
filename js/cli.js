@@ -46,7 +46,7 @@ var child_process_1 = __importDefault(require("child_process"));
 var filepath = process.argv[2];
 var outputPath = filepath + '.ics';
 fs_1.default.readFile(filepath, { encoding: 'utf8' }, function (err, file) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, events, warnings, oldFile, icsFile;
+    var _a, events, warnings, oldFile, icsFile, err_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -56,9 +56,19 @@ fs_1.default.readFile(filepath, { encoding: 'utf8' }, function (err, file) { ret
                 oldFile = fs_1.default.existsSync(outputPath) ?
                     fs_1.default.readFileSync(outputPath, { encoding: 'utf8' })
                     : undefined;
-                return [4 /*yield*/, convertToICS_1.default(events, oldFile)];
+                console.log('##', events);
+                _b.label = 1;
             case 1:
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, convertToICS_1.default(events, oldFile)];
+            case 2:
                 icsFile = _b.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _b.sent();
+                console.error("Error converting to ICS format:", err_1);
+                return [2 /*return*/];
+            case 4:
                 fs_1.default.writeFileSync(outputPath, icsFile, { encoding: 'utf8' });
                 if (events.length || oldFile)
                     child_process_1.default.exec("open " + outputPath);

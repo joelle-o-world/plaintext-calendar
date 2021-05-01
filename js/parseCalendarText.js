@@ -48,6 +48,7 @@ var HoursMinutes_1 = require("./HoursMinutes");
 var parseTimeTag_1 = require("./parseTimeTag");
 var parseDurationTag_1 = require("./parseDurationTag");
 var parseHeader_1 = require("./parseHeader");
+var isValidDate_1 = __importDefault(require("./isValidDate"));
 function parseCalendarText(txt, options) {
     var e_1, _a;
     if (options === void 0) { options = {}; }
@@ -59,7 +60,7 @@ function parseCalendarText(txt, options) {
     // Parse date from filename
     if (options.filepath) {
         var filepathDate = parseHeader_1.extractDateFromFilepath(options.filepath);
-        if (filepathDate)
+        if (filepathDate && isValidDate_1.default(filepathDate))
             day = filepathDate;
     }
     try {
@@ -73,7 +74,7 @@ function parseCalendarText(txt, options) {
             var durationTag = parseDurationTag_1.parseDurationTag(message);
             var explicitDuration = !!durationTag;
             var explicitEndTime = !!timeTag && !!timeTag.endTime;
-            var headerInfo = parseHeader_1.extractHeaderDate(line);
+            var headerInfo = parseHeader_1.extractHeaderDate(line, day);
             if (headerInfo) {
                 day = headerInfo.headerDate;
             }

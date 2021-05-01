@@ -22,10 +22,10 @@ function parseHeader(str) {
 }
 exports.parseHeader = parseHeader;
 exports.default = parseHeader;
-function extractHeaderDate(str) {
+function extractHeaderDate(str, previousDate) {
     var parse = parseHeader(str);
     if (parse) {
-        var headerDate = extractDate_1.default(parse.headerText);
+        var headerDate = extractDate_1.default(parse.headerText, previousDate);
         if (headerDate) {
             return __assign(__assign({}, parse), { headerDate: headerDate });
         }

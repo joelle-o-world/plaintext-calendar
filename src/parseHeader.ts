@@ -6,10 +6,10 @@ export function parseHeader(str: string) {
 }
 export default parseHeader
 
-export function extractHeaderDate(str: string) {
+export function extractHeaderDate(str: string, previousDate?: Date) {
   let parse = parseHeader(str);
   if(parse) {
-    let headerDate = extractDate(parse.headerText);
+    let headerDate = extractDate(parse.headerText, previousDate);
     if(headerDate) {
       return {
         ...parse,
