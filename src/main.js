@@ -1,4 +1,3 @@
-
 const fs = require('fs');
 const path = require('path');
 const ics = require('ics');
@@ -10,8 +9,6 @@ const dir = path.dirname(filepath)
 const events = []
 
 function handleEvent(line, from, to) {
-
-
   events.push({
     title: line,
     description: line,
