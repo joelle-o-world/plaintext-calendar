@@ -1,4 +1,5 @@
 # Calendar TXT
+
 Calendar TXT is a markdown/vimwiki/plain-text extension for scheduling calendar events.
 
 ## Syntax
