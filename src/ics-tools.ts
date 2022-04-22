@@ -1,6 +1,6 @@
 export function* extractICSEvents(str: string): Generator<string> {
   const reg = /BEGIN:VEVENT/gi;
-  let result: RegExpExecArray;
+  let result: RegExpExecArray | null;
   while ((result = reg.exec(str)) !== null) {
     let endIndex = str.indexOf("END:VEVENT", result.index);
     if (endIndex == -1) throw "Bad ICS file";
