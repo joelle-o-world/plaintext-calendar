@@ -2,10 +2,12 @@
   "name": "plaintext-calendar",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/main.js",
+  "bin": "js/cli.js",
   "scripts": {
     "test": "jest && tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "demo": "node js/cli.js example.txt"
   },
   "keywords": [],
   "author": "",
